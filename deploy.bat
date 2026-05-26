@@ -1,0 +1,1 @@
+pyinstaller --noconfirm --onefile --windowed --icon=eiconmakerlogo.ico --add-data "eiconmakerlogo.ico;." --name "EiconMaker" eiconmaker.py
