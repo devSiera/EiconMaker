@@ -48,6 +48,7 @@ HELP_TEXTS = {
     "input": "Select or drag the file you want to turn into an eicon grid. GIF mode accepts .gif. Image mode accepts .jpg, .jpeg, and .png.",
     "grid": (
         "Choose the grid layout.\n\n"
+        "1x1 creates a single 100x100 eicon without slicing.\n"
         "2x2 creates 4 output files.\n"
         "3x3 creates 9 output files.\n\n"
         "The input file aspect ratio must match the selected grid."
@@ -83,7 +84,7 @@ HELP_TEXTS = {
         "1. Go to https://ezgif.com/crop\n"
         "2. Upload your GIF or image.\n"
         "3. In the crop tool, choose the aspect ratio that matches your grid:\n\n"
-        "   2x2 or 3x3 = 1:1\n"
+        "   1x1, 2x2 or 3x3 = 1:1\n"
         "   2x1 = 2:1\n"
         "   1x2 = 1:2\n"
         "   3x1 = 3:1\n"
@@ -99,7 +100,7 @@ HELP_TEXTS = {
 
 
 def get_grid_options():
-    return ["2x2", "2x1", "1x2", "3x1", "1x3", "3x2", "2x3", "3x3"]
+    return ["1x1", "2x2", "2x1", "1x2", "3x1", "1x3", "3x2", "2x3", "3x3"]
 
 
 def get_frame_options():
@@ -217,7 +218,7 @@ def validate_frame_shape(frame_shape: str, cols: int, rows: int):
     if frame_shape == "Circle" and cols != rows:
         raise RuntimeError(
             "Circle frame only works with square grids.\n\n"
-            "Use 2x2 or 3x3, or switch Frame back to Square."
+            "Use 1x1, 2x2 or 3x3, or switch Frame back to Square."
         )
 
 
@@ -435,7 +436,7 @@ def try_export(frames, durations, output_dir: Path, cols: int, rows: int, colors
         palette_source.extend(part)
 
     palette = build_global_palette(palette_source, colors, 1)
-    output_names = [f"{i}.gif" for i in range(1, cols * rows + 1)]
+    output_names = ["1.gif"] if cols * rows == 1 else [f"{i}.gif" for i in range(1, cols * rows + 1)]
 
     for name, part_frames in zip(output_names, sliced_frames):
         save_gif(part_frames, sliced_durations, temp_dir / name, palette)
@@ -590,7 +591,7 @@ def slice_image(image: Image.Image, cols: int, rows: int):
 
 
 def save_image_parts(parts, output_dir: Path, log):
-    output_names = [f"{i}.png" for i in range(1, len(parts) + 1)]
+    output_names = ["1.png"] if len(parts) == 1 else [f"{i}.png" for i in range(1, len(parts) + 1)]
     sizes = []
 
     for name, part in zip(output_names, parts):
